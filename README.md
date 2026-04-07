@@ -1,5 +1,7 @@
 # WebDOOM embed (static / GitHub Pages)
 
+https://github.com/user-attachments/assets/eea67f9f-3c38-4440-bbe7-938a34c02837
+
 Embeddable **WebAssembly DOOM** using the same client pattern as [AzazelN28/web-doom](https://github.com/AzazelN28/web-doom) ([`doom.html`](https://github.com/AzazelN28/web-doom/blob/master/doom.html)): a canvas, a global `Module`, and Emscripten’s `index.js` / `index.wasm` / `index.data`. No js-dos, no DOSBox.
 
 ## Quick start
