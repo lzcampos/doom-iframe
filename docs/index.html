@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebDOOM embed demo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 52rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.5;
+        background: #111;
+        color: #eee;
+      }
+      a {
+        color: #9cf;
+      }
+      #demo-mount {
+        margin: 1.5rem 0;
+        border: 1px solid #333;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>WebDOOM embed</h1>
+    <p>
+      Static player based on
+      <a href="https://github.com/AzazelN28/web-doom">AzazelN28/web-doom</a>
+      (Emscripten / wasm-doom). Works on <strong>GitHub Pages</strong> or any static host — run
+      <code>./run.sh</code> (or <code>npm run serve</code>) from the repo root.
+    </p>
+    <p>
+      <a href="doom/player.html">Open full-page player</a>
+      (same files as the iframe below).
+    </p>
+
+    <h2>Embedded player</h2>
+    <div id="demo-mount"></div>
+
+    <h2>SDK snippet</h2>
+    <pre style="background:#1a1a1a;padding:1rem;border-radius:8px;overflow:auto"><code>&lt;div id="doom"&gt;&lt;/div&gt;
+&lt;script src="/embed.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  DoomEmbed.mount("#doom", { width: 854, height: 480 });
+&lt;/script&gt;</code></pre>
+
+    <p>
+      <small
+        ><a href="credits.html">Credits &amp; licenses</a> — DOOM® / related marks belong to their owners;
+        not affiliated.</small
+      >
+    </p>
+
+    <script src="embed.js"></script>
+    <script>
+      DoomEmbed.mount("#demo-mount", { width: 854, height: 480 });
+    </script>
+  </body>
+</html>

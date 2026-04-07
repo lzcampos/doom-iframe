@@ -1,0 +1,10 @@
+{
+  "name": "doom-iframe",
+  "private": true,
+  "description": "Embeddable WebDOOM (wasm) static site for GitHub Pages",
+  "scripts": {
+    "fetch-assets": "bash scripts/fetch-web-doom.sh",
+    "serve": "cd docs && python3 -m http.server 8765",
+    "start": "npm run serve"
+  }
+}

@@ -1,0 +1,8 @@
+node_modules/
+.tmp-freedoom-bundle/
+.cursor/
+
+# Emscripten runtime (run scripts/fetch-web-doom.sh)
+docs/doom/index.js
+docs/doom/index.wasm
+docs/doom/index.data

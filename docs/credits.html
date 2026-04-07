@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credits — WebDOOM embed</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 40rem;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        line-height: 1.55;
+        background: #111;
+        color: #e8e8e8;
+      }
+      a {
+        color: #9cf;
+      }
+      h1 {
+        font-size: 1.35rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin-top: 1.75rem;
+      }
+      .notice {
+        border-left: 3px solid #666;
+        padding-left: 1rem;
+        margin: 1.25rem 0;
+        color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <p><a href="./">← Demo</a> · <a href="doom/player.html">Player</a></p>
+    <h1>Credits</h1>
+
+    <p>
+      This site is a thin embed wrapper around browser builds in the
+      <strong>wasm-doom / WebDOOM</strong> lineage. Thank the people behind those projects first.
+    </p>
+
+    <h2>Ports &amp; fork</h2>
+    <ul>
+      <li>
+        <a href="https://github.com/AzazelN28/web-doom">AzazelN28/web-doom</a> — Emscripten port &
+        browser shell this demo follows (see their <code>doom.html</code> and README).
+      </li>
+      <li>
+        <a href="https://github.com/lazarv/wasm-doom">lazarv/wasm-doom</a> — WebAssembly DOOM foundation
+        cited upstream.
+      </li>
+    </ul>
+
+    <h2>Prebuilt files</h2>
+    <p>
+      The fetched <code>index.js</code>, <code>index.wasm</code>, and <code>index.data</code> come from a public
+      deploy associated with that work (see <code>scripts/fetch-web-doom.sh</code>). If you mirror or replace
+      them, update your credits and license notices to match <em>your</em> sources.
+    </p>
+
+    <h2>Trademarks</h2>
+    <p class="notice">
+      <strong>DOOM®</strong> is a registered trademark of ZeniMax Media Inc. in the US and/or other
+      countries. <strong>Id Software®</strong> is a registered trademark of ZeniMax Media Inc. This project
+      is <strong>not</strong> affiliated with, endorsed by, or approved by ZeniMax Media Inc. or id Software
+      LLC. Similar wording appears in the
+      <a href="https://github.com/AzazelN28/web-doom/blob/master/README.md">web-doom README</a>.
+    </p>
+
+    <h2>Licenses</h2>
+    <p>
+      Upstream game/engine code is under <strong>GPL-2.0</strong> (see upstream
+      <a href="https://github.com/AzazelN28/web-doom/blob/master/LICENSE">LICENSE</a> and
+      <a href="https://github.com/AzazelN28/web-doom/blob/master/COPYING.md">COPYING.md</a>). Other bundled
+      components (SDL, Emscripten, etc.) have their own license files upstream.
+    </p>
+    <p>
+      The small embed files in this repository (<code>embed.js</code>, <code>player.html</code>, docs layout)
+      are provided for integration; keep upstream GPL obligations in mind if you redistribute the combined
+      binaries.
+    </p>
+  </body>
+</html>

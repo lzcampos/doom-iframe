@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WebDOOM (embed player)</title>
+    <style>
+      html,
+      body {
+        font-family: system-ui, sans-serif;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #000;
+        color: #fff;
+      }
+
+      /* No border/padding on canvas — mouse coords stay correct */
+      canvas {
+        border: 0;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+
+      /* Full-page player */
+      html:not(.doom-embed) canvas {
+        width: 160vh;
+        height: 100vh;
+        max-width: 100vw;
+      }
+
+      /* Inside iframe / ?embed=1 */
+      html.doom-embed {
+        font-size: 100%;
+      }
+      html.doom-embed,
+      html.doom-embed body {
+        display: block;
+        overflow: hidden;
+      }
+      html.doom-embed canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      #container {
+        position: fixed;
+        display: flex;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        z-index: 2;
+        pointer-events: none;
+      }
+      html.doom-embed #container {
+        background: #000;
+      }
+
+      #spinner-container {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #spinner {
+        height: 30px;
+        width: 30px;
+        margin: 0;
+        display: inline-block;
+        animation: rotation 0.8s linear infinite;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 5px solid transparent;
+        border-top: 5px solid #e00;
+        border-radius: 100%;
+        background-color: transparent;
+      }
+
+      #status {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 30px;
+        margin-left: 20px;
+        font-weight: bold;
+        color: #e00;
+      }
+
+      #progress {
+        height: 20px;
+        width: min(300px, 90vw);
+      }
+
+      progress::-moz-progress-bar,
+      progress::-webkit-progress-value {
+        background: #e00;
+      }
+
+      progress {
+        color: #e00;
+      }
+
+      @keyframes rotation {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        if (new URLSearchParams(location.search).get("embed") === "1") {
+          document.documentElement.classList.add("doom-embed");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="spinner-container">
+        <div id="spinner"></div>
+        <div id="status">Downloading…</div>
+        <progress value="0" max="100" id="progress" hidden></progress>
+      </div>
+    </div>
+
+    <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script>
+      const statusElement = document.getElementById("status");
+      const progressElement = document.getElementById("progress");
+      const spinnerElement = document.getElementById("spinner");
+
+      document.addEventListener("G_SaveGame", function (e) {
+        console.log(e.detail);
+      });
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        onRuntimeInitialized: function () {
+          var frameID;
+          var currentState = { buttons: 0, x: 0, y: 0, strafe: 0, look: 0 };
+
+          function frame() {
+            currentState.buttons = 0;
+            currentState.x = 0;
+            currentState.y = 0;
+            currentState.strafe = 0;
+            currentState.look = 0;
+
+            var gamepads = navigator.getGamepads();
+            for (var index = 0; index < gamepads.length; index++) {
+              var gamepad = gamepads[index];
+              if (gamepad) {
+                var buttonLength = Math.min(20, gamepad.buttons.length);
+                for (var i = 0; i < buttonLength; i++) {
+                  var button = gamepad.buttons[i];
+                  if (button.pressed) {
+                    currentState.buttons |= 1 << i;
+                  }
+                }
+
+                if (gamepad.axes[0] < -0.1 || gamepad.axes[0] > 0.1) {
+                  currentState.strafe = gamepad.axes[0] < 0 ? -32767 : 32767;
+                }
+                if (gamepad.axes[1] < -0.1 || gamepad.axes[1] > 0.1) {
+                  currentState.y = gamepad.axes[1] < 0 ? -32767 : 32767;
+                }
+                if (gamepad.axes[2] < -0.1 || gamepad.axes[2] > 0.1) {
+                  currentState.x = gamepad.axes[2] < 0 ? -32767 : 32767;
+                }
+              }
+            }
+
+            if (Module._UpdateJoystick) {
+              Module._UpdateJoystick(
+                currentState.buttons,
+                currentState.x,
+                currentState.y,
+                currentState.strafe,
+                currentState.look
+              );
+            }
+            frameID = window.requestAnimationFrame(frame);
+          }
+
+          frameID = window.requestAnimationFrame(frame);
+        },
+        print: (function () {
+          var element = document.getElementById("output");
+          if (element) element.value = "";
+          return function (text) {
+            if (arguments.length > 1) {
+              text = Array.prototype.slice.call(arguments).join(" ");
+            }
+            console.log(text);
+            if (element) {
+              element.value += text + "\n";
+              element.scrollTop = element.scrollHeight;
+            }
+          };
+        })(),
+        printErr: function (text) {
+          if (arguments.length > 1) {
+            text = Array.prototype.slice.call(arguments).join(" ");
+          }
+          console.error(text);
+        },
+        canvas: (function () {
+          var canvas = document.getElementById("canvas");
+          canvas.addEventListener(
+            "webglcontextlost",
+            function (e) {
+              alert("WebGL context lost. Reload the page.");
+              e.preventDefault();
+            },
+            false
+          );
+          return canvas;
+        })(),
+        setStatus: function (text) {
+          if (!Module.setStatus.last) {
+            Module.setStatus.last = { time: Date.now(), text: "" };
+          }
+          if (text === Module.setStatus.last.text) {
+            return;
+          }
+          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+          var now = Date.now();
+          if (m && now - Module.setStatus.last.time < 30) {
+            return;
+          }
+          Module.setStatus.last.time = now;
+          Module.setStatus.last.text = text;
+          if (m) {
+            text = m[1];
+            progressElement.value = parseInt(m[2], 10) * 100;
+            progressElement.max = parseInt(m[4], 10) * 100;
+            progressElement.hidden = false;
+            spinnerElement.hidden = false;
+          } else {
+            progressElement.value = null;
+            progressElement.max = null;
+            progressElement.hidden = true;
+            if (!text) {
+              spinnerElement.style.display = "none";
+              document.getElementById("container").style.display = "none";
+            }
+          }
+          statusElement.innerHTML = text;
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function (left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(
+            left
+              ? "Preparing… (" + (this.totalDependencies - left) + "/" + this.totalDependencies + ")"
+              : "All downloads complete."
+          );
+        }
+      };
+
+      Module.setStatus("Downloading…");
+
+      window.onblur = function () {
+        if (typeof Module._SendPause === "function") {
+          Module._SendPause(1);
+        }
+        if (Module.SDL2 && Module.SDL2.audioContext) {
+          Module.SDL2.audioContext.suspend();
+        }
+      };
+
+      window.onfocus = function () {
+        if (typeof Module._SendPause === "function") {
+          Module._SendPause(0);
+        }
+        if (Module.SDL2 && Module.SDL2.audioContext) {
+          Module.SDL2.audioContext.resume();
+        }
+      };
+
+      window.onclick = function () {
+        if (Module.SDL2 && Module.SDL2.audioContext && Module.SDL2.audioContext.state !== "running") {
+          Module.SDL2.audioContext.resume();
+        }
+      };
+
+      window.onerror = function () {
+        Module.setStatus("Exception thrown, see JavaScript console");
+        spinnerElement.style.display = "none";
+        Module.setStatus = function (text) {
+          if (text) {
+            Module.printErr("[post-exception status] " + text);
+          }
+        };
+      };
+    </script>
+    <script async src="index.js"></script>
+  </body>
+</html>
