@@ -1,10 +1,17 @@
-# Builds the site (downloads JS/WASM/data) and deploys docs/ to GitHub Pages.
-# In the repo: Settings → Pages → Build and deployment → Source: GitHub Actions.
+# Deploys docs/ to GitHub Pages (JS/WASM fetched on the runner).
+#
+# ONE-TIME SETUP (required or configure-pages fails with "Not Found"):
+#   Repo → Settings → Pages → Build and deployment
+#   → Source: "GitHub Actions"  (NOT "Deploy from a branch")
+# Then push or run this workflow manually (Actions → Deploy Pages → Run workflow).
+#
+# https://docs.github.com/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 name: Deploy Pages
 
 on:
   push:
     branches: [main, master]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -27,11 +34,11 @@ jobs:
       - name: Fetch Emscripten assets
         run: bash scripts/fetch-web-doom.sh
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: docs
 
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

@@ -4,6 +4,7 @@
   "description": "Embeddable WebDOOM (wasm) static site for GitHub Pages",
   "scripts": {
     "fetch-assets": "bash scripts/fetch-web-doom.sh",
+    "sync-extension": "bash scripts/sync-extension-assets.sh",
     "serve": "cd docs && python3 -m http.server 8765",
     "start": "npm run serve"
   }
