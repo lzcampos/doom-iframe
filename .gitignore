@@ -1,4 +1,5 @@
 .cursor/
+dist/
 
 # Emscripten runtime (run scripts/fetch-web-doom.sh)
 docs/doom/index.js

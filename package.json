@@ -5,6 +5,7 @@
   "scripts": {
     "fetch-assets": "bash scripts/fetch-web-doom.sh",
     "sync-extension": "bash scripts/sync-extension-assets.sh",
+    "build:firefox-ext": "bash scripts/build-firefox-extension.sh",
     "serve": "cd docs && python3 -m http.server 8765",
     "start": "npm run serve"
   }

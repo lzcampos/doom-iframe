@@ -28,17 +28,27 @@ npm run sync-extension  # copies player + wasm into extension/doom/; generates i
 
 ### Mozilla Firefox
 
-Use **`extension/manifest-firefox.json`**, not `manifest.json`. Some Firefox builds disable MV3 **`service_worker`** backgrounds and require **`background.scripts`** instead; the Firefox manifest is that variant and omits Chrome-only **`sidePanel`** / **`side_panel`**.
+Firefox often **ignores** the JSON file you pick for “Temporary Add-on” and still loads **`manifest.json`** from that directory. The **`extension/`** folder contains **Chrome’s** `manifest.json` (`service_worker`), so you get *“background.service_worker is currently disabled”* even if you chose `manifest-firefox.json`.
 
-Firefox has no Chrome **`sidePanel` API**; it uses **`sidebar_action`**. After loading, use the **toolbar button** to open the **sidebar** (or **☰ → View → Sidebar** if your build exposes it).
+**Use the Firefox-only build** (one `manifest.json`, `background.scripts` only):
 
-1. Open **`about:debugging#/runtime/this-firefox`**
-2. **This Firefox → Temporary Extensions → Load Temporary Add-on…**
-3. Pick **`extension/manifest-firefox.json`**
+```bash
+npm run fetch-assets      # if needed
+npm run sync-extension
+npm run build:firefox-ext
+```
 
-Reloading Firefox removes temporary add-ons — for a permanent install, zip the `extension` folder and submit to [addons.mozilla.org](https://addons.mozilla.org) (rename `manifest-firefox.json` → `manifest.json` inside the zip, or point your tooling at it). Change `browser_specific_settings.gecko.id` to something unique before publishing.
+Then:
 
-**Optional:** In newer Firefox you can try enabling extension background service workers in `about:config` (e.g. search for **service worker** / **extensions** flags) and use `manifest.json` instead — only if you know what you’re toggling.
+1. **`about:debugging#/runtime/this-firefox`**
+2. **Load Temporary Add-on…**
+3. Select **`dist/webdoom-firefox/manifest.json`** (not anything under `extension/` if the error persists).
+
+Firefox has no Chrome **`sidePanel` API**; this build uses **`sidebar_action`**. Use the **toolbar button** to open the **sidebar**.
+
+Reloading Firefox clears temporary add-ons. For AMO, zip **`dist/webdoom-firefox/`** as-is (it already has the correct `manifest.json`). Change `browser_specific_settings.gecko.id` before publishing.
+
+**Optional:** In `about:config`, some profiles can enable MV3 background service workers so `extension/manifest.json` works — only if you know what you’re toggling.
 
 | Entry | Chrome | Firefox |
 |--------|--------|---------|
